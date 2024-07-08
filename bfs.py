@@ -18,16 +18,15 @@ class Graph:
       
    
   def bfs(self):
-    if not len(self.queue): return
-    
-    current_node = self.queue.pop(0)
-    self.result.append(current_node)
-    
-    for i in self.graph[current_node]:
-      if i in self.visited: continue
-      self.visited[i] = True
-      self.queue.append(i)
-      self.bfs()
+    while len(self.queue):
+      current_node = self.queue.pop(0)
+      self.result.append(current_node)
+      
+      for i in self.graph[current_node]:
+        if i in self.visited: continue
+        self.visited[i] = True
+        self.queue.append(i)
+        # self.bfs()
   
   
   def traverse(self, start):
