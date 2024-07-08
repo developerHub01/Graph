@@ -1,40 +1,51 @@
-class Best_first_search:
-  def __init__(self, graph, distance, start, end):
-    self.graph = graph
-    self.distance = distance
-    self.start = start
-    self.end = end
+class Graph:
+  def __init__(self, graph, heuristic_list, start):
+    self.graph = graph;
+    self.heuristic_list = heuristic_list;
+    self.goal = self.find_goal_node()
+    self.open = [start]
+    self.close = []
     
-    self.open = graph[start]
-    self.close = [start]
-     
-  def find_path(self): 
+  def find_goal_node(self):
+    for i in self.heuristic_list:
+      if self.heuristic_list[i]==0:
+        return i
+      
+  def find_best_node_index(self, list):
+    current_index = len(list)-1
+    best_node_index = current_index
+    
+    while current_index>=0:
+      current_node = list[current_index]
+      best_node = list[best_node_index]
+      if self.heuristic_list[current_node] <= self.heuristic_list[best_node]:
+        best_node_index = current_index
+      current_index -= 1
+    return best_node_index
+  
+  def find_path(self):
     if not len(self.open):
       print("Goal not found")
+      return
+    
+    current_node_index = self.find_best_node_index(self.open)
+    current_node = self.open[current_node_index]
+    
+    self.open.pop(current_node_index)
+    self.close.append(current_node)
+    
+    if current_node == self.goal:
       return self.close
-
-    min_node_index = len(self.open)-1
-    min_node = self.open[min_node_index]
     
-    while min_node_index>=0:
-      if self.distance[self.open[min_node_index]] <= self.distance[min_node]:
-        min_node = self.open[min_node_index]
-      min_node_index -= 1
-    
-    self.open.remove(min_node)
-    self.close.append(min_node)
-    
-    for node in self.graph[min_node]:
+    for node in self.graph[current_node]:
       self.open.append(node)
+      
+    print(self.open)
+    print(self.close)
     
-    if min_node == self.end: 
-      return self.close
     return self.find_path()
 
-
-
-graph1 = Best_first_search(
-  {
+graph1 = {
     "s": ["a", "b"],
     "a": ["s", "c", "d"],
     "b": ["s", "e", "f"],
@@ -44,7 +55,9 @@ graph1 = Best_first_search(
     "f": ["b", "i", "g"],
     "i": ["f"],
     "g": ["f"],
-  }, {
+  }
+
+heuristic1 = {
     "s": 13,
     "a": 12,
     "b": 4,
@@ -55,7 +68,28 @@ graph1 = Best_first_search(
     "h": 4,
     "i": 9,
     "g": 0,
-  }, "s", "g"
-)    
-  
-print(graph1.find_path())
+  }
+
+obj = Graph(graph1, heuristic1, "s")
+print(obj.find_path())
+
+graph1 = {
+  "a": ["b", "c"],
+  "b": ["a", "d", "e"],
+  "c": ["a", "f", "g"],
+  "d": ["b"],
+  "e": ["b"],
+  "f": ["c"],
+  "g": ["c"],
+}
+heuristic1 = {
+  "a":6,
+  "b":4,
+  "c":2,
+  "d":7,
+  "e":3,
+  "f":1,
+  "g":0,
+}
+obj = Graph(graph1, heuristic1, "a")
+print(obj.find_path())
